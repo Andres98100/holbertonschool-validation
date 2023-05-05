@@ -1,15 +1,9 @@
-## golang project
+# My Awesome API
+## Prerequisites
+go and make installed
 
-# Prerequisites
-golang latest version
-make latest version
-
-# Lifecycle
-build:  Compile the source code of the application to a binary named awesome-api
-run:  Run the application in background by executing the binary awesome-api, and write logs into a file named awesome-api.log
-stop:  Stop the application with the command kill XXXXX where XXXXX is the Process ID of the application. 
-clean:  Delete the binary awesome-api and the log file awesome-api.log
-test:  Check expected behaviour of the app
-lint:  Static linting on go files using golangci-lint
-unit-tests:  execute (successfully) the Golang unit tests:
-help:  Show this help message
+## Lifecycle
+build: Builds the API binary file using go run: Runs the built binary and send everything to awesome.log 
+stop: Terminates the execution of awesome-api clean: Removes binary and logs 
+test: Tests the API using curl lint: Lints all go files using golangci-lint unit-tests: Runs all unit-tests using go test integration-tests: Runs integration test using go test 
+help: Show this help message
