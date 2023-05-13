@@ -1,34 +1,68 @@
-name: module3_task2
+# Automate Releases with Git Tags and GitHub Releases
+
+name: module3_task3
+
+# Controls when the workflow will run
 on:
+  # Triggers the workflow on push or once per day at midnight
   push:
-    branches:
-      - main
+    branches: [main]
+    # paths:
+      # - 'module3_task3/**'
+    tags:
+      - '1.0.0'
   schedule:
     - cron: '0 0 * * *'
 
-permissions: read-all
-
+# Jobs has five steps
 jobs:
-  builds:
-    name: job1
-    runs-on: ubuntu-22.04
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-18.04
 
+    # Steps represent sequence of tasks that will be executed as par of the job
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: sudo module3_task2/setup.sh
-      - name: install markdown
-        run: npm install -g markdownlint-cli
+      # Checks-out your repository under $GITHUB_WORKSPACE
+      # so the job can access it
+      - name: Clone the repository
+        uses: actions/checkout@v3
 
-      - run: cd module3_task2 && make help
-      - run: cd module3_task2 && make build
-      - run: cd module3_task2 && make clean
-      - run: cd module3_task2 && make build
-      - run: cd module3_task2 && make post POST_NAME="name" POST_TITLE="title"
-      - run: cd module3_task2 && make lint
-      - run: cd module3_task2 && make package
-      - run: cd module3_task2 && make unit-tests
-      - run: cd module3_task2 && make integration-tests
-      - run: cd module3_task2 && make validate
+      # Ensure all the required tools are installed prior to any make target
+      - name: Execute the script setup.sh
+        run: |
+          cd module3_task3/
+          ./setup.sh
+      # Check syntax on markdown files
+      - name: Run markdownlint on markdown files
+        run: make lint -C module3_task3/
+
+      # Go to the right folder and execute 'make build'
+      - name: Build the application
+        run: make build -C module3_task3/
+
+      # Produce a zip file containing the dist folder
+      - name: Archive the dist folder inside a zip file
+        run: make package -C module3_task3/
+
+      # Additional steps form past module
+      - name: Run additional make rules
+        run: |
+          make unit-tests -C module3_task3/
+          make integration-tests -C module3_task3/
+          make validate -C module3_task3/
+
+      # Archive the zip file as artifact
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Archive awesome-website.zip as artifact
+          path: module3_task3/awesome-website.zip
+
+      # Generate a release with the archive and the content of DEPLOY.md
+      - name: Create a GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/1.0.0')
+        with:
+          files: module3_task3/awesome-website.zip
+          body_path: module3_task3/DEPLOY.md
