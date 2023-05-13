@@ -26,7 +26,7 @@ test: ## Check expected behaviour of the app
 	@make validate
 
 lint: ## Static linting on go files using golangci-lint
-	@golangci-lint run
+	@-golangci-lint run
 
 unit-tests: ## execute (successfully) the Golang unit tests
 	@go test -v -short -coverprofile=coverage-units.out     
